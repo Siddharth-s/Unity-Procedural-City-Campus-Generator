@@ -253,8 +253,7 @@ public static class Utility
             return inside;
         }
 
-        var oldPoint = new Vector3(
-            poly[poly.Length - 1].x,0, poly[poly.Length - 1].z);
+        var oldPoint = new Vector3(poly[poly.Length - 1].x,0, poly[poly.Length - 1].z);
 
         for (int i = 0; i < poly.Length; i++)
         {

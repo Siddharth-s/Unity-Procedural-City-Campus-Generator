@@ -451,17 +451,11 @@ public class CustomPlane : MonoBehaviour
 
     public void GetAllCycles()
     {
-
-        var logEntries = System.Type.GetType("UnityEditor.LogEntries, UnityEditor.dll");
-
-        var clearMethod = logEntries.GetMethod("Clear", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public);
-
-        clearMethod.Invoke(null, null);
-
+        ClearConsole();
 
         allCyclesInGraph = new List<int[]>();
 
-        List<int[]> graph = new List<int[]>();
+        List<int[]> graph = new List<int[]>(); 
         foreach (Line l in outerLines)
         {
             graph.Add(Utility.IDPairofLine(l, ref points));
@@ -483,62 +477,87 @@ public class CustomPlane : MonoBehaviour
         }
         Debug.Log(s);
         allCyclesInGraph = Cycles.ReturnAllCircles(graphArray);//all cycles in the graph
+
+        //NOW DELETE THE CYCLES CONTAINING EXTRA EDGES AND POINTS
+
         Debug.Log(allCyclesInGraph.Count);
+
+        List<int> cyclesIDToRemove = new List<int>();
+
         for (int i = 0; i < allCyclesInGraph.Count; i++)
         {
-            foreach (var pt in points)
+            foreach (var pt in points)//all points of current cycle
             {
-
-                if (!allCyclesInGraph[i].Contains(pt.id))//all the points not in this cycle,chceck if point is inside the cycle
+                if (!allCyclesInGraph[i].Contains(pt.id))//all the points not in this cycle, check if point is inside the cycle
                 {
                     string j = "";
                     for (int k = 0; k < allCyclesInGraph[i].Length; k++)
                     {
                         j += "" + allCyclesInGraph[i][k] + ",";
                     }
-                    if(Utility.IsInPolygon(allCyclesInGraph[i], pt.coord, points))
+
+                    if (Utility.IsInPolygon(allCyclesInGraph[i], pt.coord, points)) // If the current point(point other than the one which make up the cycle) is inside the current cycle
                     {
                         //Debug.Log(i.ToString() + ": " + Utility.IsInPolygon(allCyclesInGraph[i], pt.coord, points) + " " + pt.id.ToString());
-                        allCyclesInGraph.Remove(allCyclesInGraph[i]);
+                        //allCyclesInGraph.Remove(allCyclesInGraph[i]);
+                        cyclesIDToRemove.Add(i);
                     }
-                       
+
                     if (Utility.IsInPolygonUsingRay(allCyclesInGraph[i], pt.coord, points))
                     {
                         //Debug.Log(pt.id);
+                        //cyclesIDToRemove.Add(i);
                     }
                 }
             }//remove if point inside 
-
             //TODO: Remove if two pairs are connected
         }
+
+        foreach(var cycleToBeRemovedID in cyclesIDToRemove)
+        {
+            //allCyclesInGraph.Remove(allCyclesInGraph[cycleToBeRemovedID]);
+            Debug.Log(cycleToBeRemovedID + "***" );
+        }
+
         Debug.Log(allCyclesInGraph.Count);
 
 
     }
 
+    private static void ClearConsole()
+    {
+        var logEntries = System.Type.GetType("UnityEditor.LogEntries, UnityEditor.dll");
+        var clearMethod = logEntries.GetMethod("Clear", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public);
+        clearMethod.Invoke(null, null);
+    }
+
     void OnDrawGizmosSelected()
     {
-
-        // Draw a yellow sphere at the transform's position
         if (points != null)
         {
-            foreach (Point pt in points)
-            {
-                Gizmos.color = Color.red;
-                UnityEditor.Handles.color = Color.magenta;
-                //Gizmos.DrawSphere(pt.coord+ Vector3.up, 0.2f);
-                UnityEditor.Handles.Label(pt.coord, pt.id.ToString());
-            }
-            foreach (Line pt in outerLines)
-            {
-                Gizmos.color = Random.ColorHSV();
-                Gizmos.DrawLine(pt.a + Vector3.up * 3, pt.b + Vector3.up * 3);
-            }
-            foreach (Line pt in allprimaryRoads)
-            {
-                Gizmos.color = Random.ColorHSV();
-                Gizmos.DrawLine(pt.a + Vector3.up * 3, pt.b + Vector3.up * 3);
-            }
+            DrawNumbersForPoints(points);
+            DrawGizmoOfLines(outerLines);
+            DrawGizmoOfLines(allprimaryRoads);
+        }
+    }
+
+    private void DrawNumbersForPoints(List<Point> listOfPoints)
+    {
+        foreach (Point pt in listOfPoints)
+        {
+            Gizmos.color = Color.red;
+            UnityEditor.Handles.color = Color.magenta;
+            //Gizmos.DrawSphere(pt.coord+ Vector3.up, 0.2f);
+            UnityEditor.Handles.Label(pt.coord, pt.id.ToString());
+        }
+    }
+
+    private void DrawGizmoOfLines(List<Line> listOfLines)
+    {
+        foreach (Line pt in listOfLines)
+        {
+            Gizmos.color = Random.ColorHSV();
+            Gizmos.DrawLine(pt.a + Vector3.up * 3, pt.b + Vector3.up * 3);
         }
     }
 }
