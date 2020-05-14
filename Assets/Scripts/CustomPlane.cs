@@ -14,7 +14,7 @@ public struct Line
         b = z;
     }
 }
-public struct Point
+public class Point
 {
     public Vector3 coord;
     public int id;
@@ -23,6 +23,11 @@ public struct Point
     {
         coord = x;
         id = a;
+    }
+    public Point()
+    {
+        coord = Vector3.zero;
+        id = 0;
     }
 }
 
@@ -480,47 +485,55 @@ public class CustomPlane : MonoBehaviour
 
         //NOW DELETE THE CYCLES CONTAINING EXTRA EDGES AND POINTS
 
+        //Debug.Log(allCyclesInGraph.Count);
+
+        //List<int> cyclesIDToRemove = new List<int>();
+
+        //for (int i = 0; i < allCyclesInGraph.Count; i++)
+        //{
+        //    foreach (var pt in points)//all points of current cycle
+        //    {
+        //        if (!allCyclesInGraph[i].Contains(pt.id))//all the points not in this cycle, check if point is inside the cycle
+        //        {
+        //            string j = "";
+        //            for (int k = 0; k < allCyclesInGraph[i].Length; k++)
+        //            {
+        //                j += "" + allCyclesInGraph[i][k] + ",";
+        //            }
+
+        //            if (Utility.IsInPolygon(allCyclesInGraph[i], pt.coord, points)) // If the current point(point other than the one which make up the cycle) is inside the current cycle
+        //            {
+        //                //Debug.Log(i.ToString() + ": " + Utility.IsInPolygon(allCyclesInGraph[i], pt.coord, points) + " " + pt.id.ToString());
+        //                //allCyclesInGraph.Remove(allCyclesInGraph[i]);
+        //                cyclesIDToRemove.Add(i);
+        //            }
+
+        //            if (Utility.IsInPolygonUsingRay(allCyclesInGraph[i], pt.coord, points))
+        //            {
+        //                //Debug.Log(pt.id);
+        //                //cyclesIDToRemove.Add(i);
+        //            }
+        //        }
+        //    }//remove if point inside 
+        //    //TODO: Remove if two pairs are connected
+        //}// Remove cycles
+
+        //foreach(var cycleToBeRemovedID in cyclesIDToRemove)
+        //{
+
+        //    string cy = "*_* " + cycleToBeRemovedID.ToString() + " : ";
+        //    foreach (var pt in allCyclesInGraph[cycleToBeRemovedID])
+        //    {
+        //        cy += " " + pt + ",";
+        //    }
+        //    Debug.Log(cy);
+        //}
+
         Debug.Log(allCyclesInGraph.Count);
 
-        List<int> cyclesIDToRemove = new List<int>();
+        // New Approach
 
-        for (int i = 0; i < allCyclesInGraph.Count; i++)
-        {
-            foreach (var pt in points)//all points of current cycle
-            {
-                if (!allCyclesInGraph[i].Contains(pt.id))//all the points not in this cycle, check if point is inside the cycle
-                {
-                    string j = "";
-                    for (int k = 0; k < allCyclesInGraph[i].Length; k++)
-                    {
-                        j += "" + allCyclesInGraph[i][k] + ",";
-                    }
-
-                    if (Utility.IsInPolygon(allCyclesInGraph[i], pt.coord, points)) // If the current point(point other than the one which make up the cycle) is inside the current cycle
-                    {
-                        //Debug.Log(i.ToString() + ": " + Utility.IsInPolygon(allCyclesInGraph[i], pt.coord, points) + " " + pt.id.ToString());
-                        //allCyclesInGraph.Remove(allCyclesInGraph[i]);
-                        cyclesIDToRemove.Add(i);
-                    }
-
-                    if (Utility.IsInPolygonUsingRay(allCyclesInGraph[i], pt.coord, points))
-                    {
-                        //Debug.Log(pt.id);
-                        //cyclesIDToRemove.Add(i);
-                    }
-                }
-            }//remove if point inside 
-            //TODO: Remove if two pairs are connected
-        }
-
-        foreach(var cycleToBeRemovedID in cyclesIDToRemove)
-        {
-            //allCyclesInGraph.Remove(allCyclesInGraph[cycleToBeRemovedID]);
-            Debug.Log(cycleToBeRemovedID + "***" );
-        }
-
-        Debug.Log(allCyclesInGraph.Count);
-
+        FindCycles.FindMCB(graph,points);
 
     }
 

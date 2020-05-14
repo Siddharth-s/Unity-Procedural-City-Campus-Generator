@@ -147,7 +147,7 @@ public static class Utility
         return false;
     }
 
-    public static int[] IDPairofLine(Line a,ref List<Point> allPoints)//Returns a pair integer id for the given Line end points 
+    public static int[] IDPairofLine(Line a,ref List<Point> allPoints)//Returns a pair integer id for the given Line end points : Like line = {1,5}
     {
         int[] edge = new int[2];
         int pointA = -1, pointB = -1;
@@ -300,6 +300,12 @@ public static class Utility
             inside = true;
         }
         return inside;
+
+
+        //Get all the pairs of lines possible from the points in circle except the ones in circle
+        //check if any pair exists in the set of all lines
+
+ 
     }
 
     public static List<Line> ListOfLineOfAPolygon(int[] arr,List<Point> points)//takes array of points ids of polygon

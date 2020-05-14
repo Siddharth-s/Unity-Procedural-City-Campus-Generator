@@ -1,107 +1,57 @@
-﻿//using System.Collections;
-//using System.Collections.Generic;
-//using UnityEngine;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
-//public class FindCycles : MonoBehaviour
-//{
+public static class FindCycles 
+{
+    public static void FindMCB(List<int[]> planarGraph,List<Point> points)
+    {
+        List<int[]> planarGraphCopy = new List<int[]>(planarGraph);// so if we make changes to this original wont be affected
+        List<Point> pointsCopy = new List<Point>(points);
+        
+        ChangeFromXZtoXY(pointsCopy);//x,z to x,y
 
-//    struct Tree
-//    {
-//        List<int> cycle;
-//        List<Tree> children;
-//    };
-//    public class Vertex
-//    {
-//        //C++ TO C# CONVERTER TODO TASK: The implementation of the following method could not be found:
-//        //		Vertex(int inName, STLVector<Point> inPosition);
-//        //C++ TO C# CONVERTER WARNING: 'const' methods are not available in C#:
-//        //ORIGINAL LINE: bool operator < (Vertex const& vertex) const;
-//        //C++ TO C# CONVERTER TODO TASK: The implementation of the following method could not be found:
-//        //		bool operator < (Vertex vertex);
+        Point leftMostBottomMostPoint = pointsCopy[0];
 
-//        // The index into the 'positions' input provided to the call to
-//        // operator().  The index is used when reporting cycles to the
-//        // caller of the constructor for MinimalCycleBasis.
-//        public int name;
+        leftMostBottomMostPoint = FindLeftMostBottomMostPoint(pointsCopy, leftMostBottomMostPoint);// TODO: check if this works
 
-//        // Multiple vertices can share a position during processing of
-//        // graph components.
-//        public List<Point> position = new List<Point>(2);
+        //TODO: Select first clockwisemost edgesw
 
-//        // The mVertexStorage member owns the Vertex objects and maintains
-//        // the reference counts on those objects.  The adjacent pointers
-//        // are considered to be weak pointers; neither object ownership nor
-//        // reference counting is required by 'adjacent'.
-//        public SortedSet<Vertex> adjacent = new SortedSet<Vertex>();
+        Debug.Log(leftMostBottomMostPoint.coord.x + " " + leftMostBottomMostPoint.coord.y + " ID:" + leftMostBottomMostPoint.id);
+    }
 
-//        // Support for depth-first traversal of a graph.
-//        public int visited;
-//    }
-
-//    Vertex GetClockwiseMost(Vertex vPrev, Vertex vCurr)
-//    {
-//        Vertex vNext = null;
-//        bool vCurrConvex = false;
-//        List<Point> dCurr = new List<Point>();
-//        List<Point> dNext = new List<Point>(2);
-//        if (vPrev != null)
-//        {
-//            dCurr[0] = (*vCurr.position)[0] - (*vPrev.position)[0];
-//            dCurr[1] = (*vCurr.position)[1] - (*vPrev.position)[1];
-//        }
-//        else
-//        {
-//            dCurr[0] = (Point)0;
-//            dCurr[1] = (Point) - 1;
-//        }
-
-//        foreach (var vAdj in vCurr.adjacent)
-//        {
-//            // vAdj is a vertex adjacent to vCurr.  No backtracking is allowed.
-//            if (vAdj == vPrev)
-//            {
-//                continue;
-//            }
-
-//            // Compute the potential direction to move in.
-//            List<Point> dAdj = new List<Point>(2);
-//            dAdj[0] = (vAdj.position)[0] - (vCurr.position)[0];
-//            dAdj[1] = (vAdj.position)[1] - (vCurr.position)[1];
-
-//            // Select the first candidate.
-//            if (vNext == null)
-//            {
-//                vNext = vAdj;
-//                dNext = new List<Point>(dAdj);
-//                vCurrConvex = (dNext[0] * dCurr[1] <= dNext[1] * dCurr[0]) != null;
-//                continue;
-//            }
-
-//            // Update if the next candidate is clockwise of the current
-//            // clockwise-most vertex.
-//            if (vCurrConvex)
-//            {
-//                if (dCurr[0] * dAdj[1] < dCurr[1] * dAdj[0] != null || dNext[0] * dAdj[1] < dNext[1] * dAdj[0] != null)
-//                {
-//                    vNext = vAdj;
-//                    dNext = new List<Point>(dAdj);
-//                    vCurrConvex = (dNext[0] * dCurr[1] <= dNext[1] * dCurr[0]) != null;
-//                }
-//            }
-//            else
-//            {
-//                if (dCurr[0] * dAdj[1] < dCurr[1] * dAdj[0] != null && dNext[0] * dAdj[1] < dNext[1] * dAdj[0] != null)
-//                {
-//                    vNext = vAdj;
-//                    dNext = new List<Point>(dAdj);
-//                    vCurrConvex = (dNext[0] * dCurr[1] < dNext[1] * dCurr[0]) != null;
-//                }
-//            }
-//        }
-
-//        return vNext;
-//    }
-//}
+    private static Point GetClockwiseMost(Point pPrev, Point pCurr)
+    {
+        if (true)
+        {
+            return null;
+        }
+    }
 
 
+    private static void ChangeFromXZtoXY(List<Point> pointsCopy)
+    {
+        foreach (Point p in pointsCopy)
+        {
+            Vector3 temp = new Vector3(p.coord.x, p.coord.z, 0);
+            p.coord = temp;
+        }
+    }
 
+    private static Point FindLeftMostBottomMostPoint(List<Point> pointsCopy, Point leftMostBottomMostPoint)
+    {
+        foreach (Point p in pointsCopy)
+        {
+            if (p.coord.x < leftMostBottomMostPoint.coord.x)
+            {
+                leftMostBottomMostPoint = p;
+            }
+            else if (p.coord.x == leftMostBottomMostPoint.coord.x && p.coord.y < leftMostBottomMostPoint.coord.y)
+            {
+                leftMostBottomMostPoint = p;
+            }
+        }
+
+        return leftMostBottomMostPoint;
+    }
+}
