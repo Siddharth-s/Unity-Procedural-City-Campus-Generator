@@ -4,23 +4,23 @@ using UnityEngine;
 
 public static class FindCycles 
 {
-    public static void FindMCB(List<int[]> planarGraph,List<Point> points)
+    public static void FindMCB(List<int[]> planarGraph,List<Vertex> allVertices)
     {
         List<int[]> planarGraphCopy = new List<int[]>(planarGraph);// so if we make changes to this original wont be affected
-        List<Point> pointsCopy = new List<Point>(points);
+        List<Vertex> verticesCopy = new List<Vertex>(allVertices);
         
-        ChangeFromXZtoXY(pointsCopy);//x,z to x,y
+        ChangeFromXZtoXY(verticesCopy);//x,z to x,y
 
-        Point leftMostBottomMostPoint = pointsCopy[0];
+        Vertex leftMostBottomMostVertex = verticesCopy[0];
 
-        leftMostBottomMostPoint = FindLeftMostBottomMostPoint(pointsCopy, leftMostBottomMostPoint);// TODO: check if this works
+        leftMostBottomMostVertex = FindLeftMostBottomMostPoint(verticesCopy, leftMostBottomMostVertex);// TODO: check if this works
 
         //TODO: Select first clockwisemost edgesw
 
-        Debug.Log(leftMostBottomMostPoint.coord.x + " " + leftMostBottomMostPoint.coord.y + " ID:" + leftMostBottomMostPoint.id);
+        Debug.Log(leftMostBottomMostVertex.coord.x + " " + leftMostBottomMostVertex.coord.y + " ID:" + leftMostBottomMostVertex.id);
     }
 
-    private static Point GetClockwiseMost(Point pPrev, Point pCurr)
+    private static Vertex GetClockwiseMost(Vertex vPrev, Vertex vCurr)
     {
         if (true)
         {
@@ -29,29 +29,28 @@ public static class FindCycles
     }
 
 
-    private static void ChangeFromXZtoXY(List<Point> pointsCopy)
+    private static void ChangeFromXZtoXY(List<Vertex> verticesCopy)
     {
-        foreach (Point p in pointsCopy)
+        foreach (Vertex p in verticesCopy)
         {
             Vector3 temp = new Vector3(p.coord.x, p.coord.z, 0);
             p.coord = temp;
         }
     }
 
-    private static Point FindLeftMostBottomMostPoint(List<Point> pointsCopy, Point leftMostBottomMostPoint)
+    private static Vertex FindLeftMostBottomMostPoint(List<Vertex> verticesCopy, Vertex leftMostBottomMostVertex)
     {
-        foreach (Point p in pointsCopy)
+        foreach (Vertex p in verticesCopy)
         {
-            if (p.coord.x < leftMostBottomMostPoint.coord.x)
+            if (p.coord.x < leftMostBottomMostVertex.coord.x)
             {
-                leftMostBottomMostPoint = p;
+                leftMostBottomMostVertex = p;
             }
-            else if (p.coord.x == leftMostBottomMostPoint.coord.x && p.coord.y < leftMostBottomMostPoint.coord.y)
+            else if (p.coord.x == leftMostBottomMostVertex.coord.x && p.coord.y < leftMostBottomMostVertex.coord.y)
             {
-                leftMostBottomMostPoint = p;
+                leftMostBottomMostVertex = p;
             }
         }
-
-        return leftMostBottomMostPoint;
+        return leftMostBottomMostVertex;
     }
 }

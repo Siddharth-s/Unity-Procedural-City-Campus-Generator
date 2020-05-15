@@ -14,17 +14,17 @@ public struct Line
         b = z;
     }
 }
-public class Point
+public class Vertex
 {
     public Vector3 coord;
     public int id;
 
-    public Point(Vector3 x,int a)
+    public Vertex(Vector3 x,int a)
     {
         coord = x;
         id = a;
     }
-    public Point()
+    public Vertex()
     {
         coord = Vector3.zero;
         id = 0;
@@ -37,7 +37,7 @@ public class CustomPlane : MonoBehaviour
 {
     public GameObject roadBlock;
     Mesh mesh;
-    public List<Vector3> planePoints;
+    public List<Vector3> planeVertices;
 
     //for mesh generation of plane-----
 
@@ -48,9 +48,9 @@ public class CustomPlane : MonoBehaviour
     //Storing information for comp
     [HideInInspector] public float minX, minZ, maxX, maxZ;
     [HideInInspector] public Vector3 centroid;
-    List<Line> outerLines;//contains pairs of points to define lines
+    List<Line> outerLines;//contains pairs of vertices to define lines
     List<Line> allprimaryRoads;
-    List<Point> points;//store vertex and its id
+    List<Vertex> allVertices;//store vertex and its id
     List<int[,]> edges;//in format {x.id,y.id}
     List<int[]> allCyclesInGraph;
     List<int> intList;
@@ -68,16 +68,16 @@ public class CustomPlane : MonoBehaviour
         outerLines = new List<Line>();
         allprimaryRoads = new List<Line>();
         outerLines.Clear();
-        centroid = Utility.CalculateCentroid(planePoints);
+        centroid = Utility.CalculateCentroid(planeVertices);
 
 
-        for (int j = 0; j < planePoints.Count - 1; j++)
+        for (int j = 0; j < planeVertices.Count - 1; j++)
             {
-                GenerateRoadBetweenPoints(planePoints[j], planePoints[j + 1],0.15f);
-                outerLines.Add(new Line(new Vector3(planePoints[j].x, 0f, planePoints[j].z), new Vector3(planePoints[j+1].x, 0f, planePoints[j+1].z))); //Add Encircling lines to lines List
+                GenerateRoadBetweenPoints(planeVertices[j], planeVertices[j + 1],0.15f);
+                outerLines.Add(new Line(new Vector3(planeVertices[j].x, 0f, planeVertices[j].z), new Vector3(planeVertices[j+1].x, 0f, planeVertices[j+1].z))); //Add Encircling lines to lines List
             }
-        GenerateRoadBetweenPoints(planePoints[0], planePoints[planePoints.Count-1],0.15f);
-        outerLines.Add(new Line(new Vector3(planePoints[0].x, 0f, planePoints[0].z), new Vector3(planePoints[planePoints.Count - 1].x, 0f, planePoints[planePoints.Count - 1].z)));//Add last Encircling line to lines List
+        GenerateRoadBetweenPoints(planeVertices[0], planeVertices[planeVertices.Count-1],0.15f);
+        outerLines.Add(new Line(new Vector3(planeVertices[0].x, 0f, planeVertices[0].z), new Vector3(planeVertices[planeVertices.Count - 1].x, 0f, planeVertices[planeVertices.Count - 1].z)));//Add last Encircling line to lines List
 
 
         //mesh generation------------------------------------------------
@@ -97,9 +97,9 @@ public class CustomPlane : MonoBehaviour
 
     private void PopulateVertices()
     {
-        vertices = new Vector3[planePoints.Count];
+        vertices = new Vector3[planeVertices.Count];
         int i = 0;
-        foreach (Vector3 point in planePoints)
+        foreach (Vector3 point in planeVertices)
         {
             vertices[i] = point;
             i++;
@@ -109,7 +109,7 @@ public class CustomPlane : MonoBehaviour
     private void PopulateTriangles()
     {
         trianglesList = new List<int>();
-        for(int j = 0; j < planePoints.Count - 2; j++)
+        for(int j = 0; j < planeVertices.Count - 2; j++)
         {
 
                 trianglesList.Add(0);
@@ -130,7 +130,7 @@ public class CustomPlane : MonoBehaviour
     private void CalculateMinMax()
     {
         minX = minZ = maxX = maxZ = 0;
-        foreach(Vector3 point in planePoints)
+        foreach(Vector3 point in planeVertices)
         {
             if(point.x < minX)
             {
@@ -154,10 +154,10 @@ public class CustomPlane : MonoBehaviour
 
     private void AssignInitialPoints()
     {
-        points = new List<Point>();
-        foreach(Vector3 pt in planePoints)
+        allVertices = new List<Vertex>();
+        foreach(Vector3 pt in planeVertices)
         {
-            points.Add(new Point(pt, points.Count + 1));
+            allVertices.Add(new Vertex(pt, allVertices.Count + 1));
         }
     }
 
@@ -266,7 +266,7 @@ public class CustomPlane : MonoBehaviour
         allprimaryRoads.Add(primaryRoad);//adding primary road to the allprimaryroad list.. (TODO: Draw roads from here)
         GenerateRoadBetweenPoints(primaryRoad.a, primaryRoad.b);
 
-        Utility.AddVerticesAtIntersection(primaryRoad, ref outerLines, ref points,gate.transform.position);
+        Utility.AddVerticesAtIntersection(primaryRoad, ref outerLines, ref allVertices,gate.transform.position);
     }
 
     public void GenerateSecondPrimaryRoad()
@@ -295,8 +295,8 @@ public class CustomPlane : MonoBehaviour
             }
             GenerateRoadBetweenPoints(bestSecondRoad.a, bestSecondRoad.b);
             allprimaryRoads.Add(bestSecondRoad);
-            Utility.AddVerticesAtIntersection(bestSecondRoad, ref outerLines, ref points, gate.transform.position);
-            Utility.AddVerticesAtIntersection(bestSecondRoad, ref allprimaryRoads, ref points, gate.transform.position);
+            Utility.AddVerticesAtIntersection(bestSecondRoad, ref outerLines, ref allVertices, gate.transform.position);
+            Utility.AddVerticesAtIntersection(bestSecondRoad, ref allprimaryRoads, ref allVertices, gate.transform.position);
         }
         else
         {
@@ -338,8 +338,8 @@ public class CustomPlane : MonoBehaviour
                     #endregion
                     GenerateRoadBetweenPoints(pointA,pointB);
                     allprimaryRoads.Add(new Line(pointA,pointB));
-                    Utility.AddVerticesAtIntersection(new Line(pointA, pointB), ref outerLines, ref points, gate.transform.position);
-                    Utility.AddVerticesAtIntersection(new Line(pointA, pointB), ref allprimaryRoads, ref points, gate.transform.position);
+                    Utility.AddVerticesAtIntersection(new Line(pointA, pointB), ref outerLines, ref allVertices, gate.transform.position);
+                    Utility.AddVerticesAtIntersection(new Line(pointA, pointB), ref allprimaryRoads, ref allVertices, gate.transform.position);
                 }
                 else// from one or both of two 1/3rds of the road 
                 {  
@@ -408,26 +408,26 @@ public class CustomPlane : MonoBehaviour
                     {
                         GenerateRoadBetweenPoints(pointAOneThird, pointBOneThird);
                         allprimaryRoads.Add(new Line(pointAOneThird, pointBOneThird));
-                        Utility.AddVerticesAtIntersection(new Line(pointAOneThird, pointBOneThird), ref outerLines, ref points, gate.transform.position);
-                        Utility.AddVerticesAtIntersection(new Line(pointAOneThird, pointBOneThird), ref allprimaryRoads, ref points, gate.transform.position);
+                        Utility.AddVerticesAtIntersection(new Line(pointAOneThird, pointBOneThird), ref outerLines, ref allVertices, gate.transform.position);
+                        Utility.AddVerticesAtIntersection(new Line(pointAOneThird, pointBOneThird), ref allprimaryRoads, ref allVertices, gate.transform.position);
                     }
                     else if(ran == 1)
                     {
                         GenerateRoadBetweenPoints(pointATwoThird, pointBTwoThird);
                         allprimaryRoads.Add(new Line(pointATwoThird, pointBTwoThird));
-                        Utility.AddVerticesAtIntersection(new Line(pointATwoThird, pointBTwoThird), ref outerLines, ref points, gate.transform.position);
-                        Utility.AddVerticesAtIntersection(new Line(pointATwoThird, pointBTwoThird), ref allprimaryRoads, ref points, gate.transform.position);
+                        Utility.AddVerticesAtIntersection(new Line(pointATwoThird, pointBTwoThird), ref outerLines, ref allVertices, gate.transform.position);
+                        Utility.AddVerticesAtIntersection(new Line(pointATwoThird, pointBTwoThird), ref allprimaryRoads, ref allVertices, gate.transform.position);
                     }
                     else
                     {
                         GenerateRoadBetweenPoints(pointAOneThird, pointBOneThird);
                         allprimaryRoads.Add(new Line(pointAOneThird, pointBOneThird));
-                        Utility.AddVerticesAtIntersection(new Line(pointAOneThird, pointBOneThird), ref outerLines, ref points, gate.transform.position);
-                        Utility.AddVerticesAtIntersection(new Line(pointAOneThird, pointBOneThird), ref allprimaryRoads, ref points, gate.transform.position);
+                        Utility.AddVerticesAtIntersection(new Line(pointAOneThird, pointBOneThird), ref outerLines, ref allVertices, gate.transform.position);
+                        Utility.AddVerticesAtIntersection(new Line(pointAOneThird, pointBOneThird), ref allprimaryRoads, ref allVertices, gate.transform.position);
                         GenerateRoadBetweenPoints(pointATwoThird, pointBTwoThird);
                         allprimaryRoads.Add(new Line(pointATwoThird, pointBTwoThird));
-                        Utility.AddVerticesAtIntersection(new Line(pointATwoThird, pointBTwoThird), ref outerLines, ref points, gate.transform.position);
-                        Utility.AddVerticesAtIntersection(new Line(pointATwoThird, pointBTwoThird), ref allprimaryRoads, ref points, gate.transform.position);
+                        Utility.AddVerticesAtIntersection(new Line(pointATwoThird, pointBTwoThird), ref outerLines, ref allVertices, gate.transform.position);
+                        Utility.AddVerticesAtIntersection(new Line(pointATwoThird, pointBTwoThird), ref allprimaryRoads, ref allVertices, gate.transform.position);
                     }
                 
                 }
@@ -463,11 +463,11 @@ public class CustomPlane : MonoBehaviour
         List<int[]> graph = new List<int[]>(); 
         foreach (Line l in outerLines)
         {
-            graph.Add(Utility.IDPairofLine(l, ref points));
+            graph.Add(Utility.IDPairofLine(l, ref allVertices));
         }
         foreach (Line l in allprimaryRoads)
         {
-            graph.Add(Utility.IDPairofLine(l, ref points));
+            graph.Add(Utility.IDPairofLine(l, ref allVertices));
         }
         int[,] graphArray = new int[graph.Count, 2];
         for (int i = 0; i < graphArray.GetLength(0); i++)
@@ -533,7 +533,7 @@ public class CustomPlane : MonoBehaviour
 
         // New Approach
 
-        FindCycles.FindMCB(graph,points);
+        FindCycles.FindMCB(graph,allVertices);
 
     }
 
@@ -546,17 +546,17 @@ public class CustomPlane : MonoBehaviour
 
     void OnDrawGizmosSelected()
     {
-        if (points != null)
+        if (allVertices != null)
         {
-            DrawNumbersForPoints(points);
+            DrawNumbersForPoints(allVertices);
             DrawGizmoOfLines(outerLines);
             DrawGizmoOfLines(allprimaryRoads);
         }
     }
 
-    private void DrawNumbersForPoints(List<Point> listOfPoints)
+    private void DrawNumbersForPoints(List<Vertex> listOfPoints)
     {
-        foreach (Point pt in listOfPoints)
+        foreach (Vertex pt in listOfPoints)
         {
             Gizmos.color = Color.red;
             UnityEditor.Handles.color = Color.magenta;

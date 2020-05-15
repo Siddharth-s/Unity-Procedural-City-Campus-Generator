@@ -147,11 +147,11 @@ public static class Utility
         return false;
     }
 
-    public static int[] IDPairofLine(Line a,ref List<Point> allPoints)//Returns a pair integer id for the given Line end points : Like line = {1,5}
+    public static int[] IDPairofLine(Line a,ref List<Vertex> allPoints)//Returns a pair integer id for the given Line end points : Like line = {1,5}
     {
         int[] edge = new int[2];
         int pointA = -1, pointB = -1;
-        foreach(Point point in allPoints)
+        foreach(Vertex point in allPoints)
         {
             if(a.a == point.coord)
             {
@@ -166,7 +166,7 @@ public static class Utility
         edge[1] = pointB;
         return edge;
     }
-    public static void  AddVerticesAtIntersection(Line line ,ref List<Line> allLines, ref List<Point> points,Vector3 gatePosition)
+    public static void  AddVerticesAtIntersection(Line line ,ref List<Line> allLines, ref List<Vertex> points,Vector3 gatePosition)
     {
         Vector3 tempIntersection = Vector3.zero;
         List<Line> linesToEdit = new List<Line>();
@@ -182,7 +182,7 @@ public static class Utility
                     {
                         linesToEdit.Add(targetLine);
                         intersectionPoint.Add(tempIntersection);
-                        points.Add(new Point(tempIntersection, points.Count + 1)); 
+                        points.Add(new Vertex(tempIntersection, points.Count + 1)); 
                     }
                     if(!linesToEdit.Contains(line))
                     {
@@ -225,7 +225,7 @@ public static class Utility
     }
 
 
-    public static Vector3 PointFromID(List<Point> points,int id)
+    public static Vector3 PointFromID(List<Vertex> points,int id)
     {
         foreach (var item in points)
         {
@@ -237,7 +237,7 @@ public static class Utility
         return new Vector3(float.MaxValue,float.MaxValue,float.MaxValue);
     }
 
-    public static bool IsInPolygon(int[] loop, Vector3 p,List<Point> point)
+    public static bool IsInPolygon(int[] loop, Vector3 p,List<Vertex> point)
     {
 
         Vector3[] poly = new Vector3[loop.Length];
@@ -283,7 +283,7 @@ public static class Utility
         return inside;
     }
 
-    public static bool IsInPolygonUsingRay(int[] loop, Vector3 p, List<Point> points)
+    public static bool IsInPolygonUsingRay(int[] loop, Vector3 p, List<Vertex> points)
     {
         bool inside = false;
         //Vector3[] poly = new Vector3[loop.Length];
@@ -308,7 +308,7 @@ public static class Utility
  
     }
 
-    public static List<Line> ListOfLineOfAPolygon(int[] arr,List<Point> points)//takes array of points ids of polygon
+    public static List<Line> ListOfLineOfAPolygon(int[] arr,List<Vertex> points)//takes array of points ids of polygon
     {
         List<Line> polygon = new List<Line>();
         for (int i = 0; i < arr.Length - 1; i++)
