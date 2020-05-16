@@ -30,8 +30,7 @@ public class Cycles
             for (int i = 1; i < cy.Length; i++)
                 s += "," + cy[i];
 
-            //Console.WriteLine(s);
-            Debug.Log(s);
+            Debug.Log("Cycle Vertices: " + s);
         }
         return allCycles;
     }

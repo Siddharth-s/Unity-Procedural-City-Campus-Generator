@@ -161,7 +161,7 @@ public class CustomPlane : MonoBehaviour
         }
     }
 
-    void GenerateRoadBetweenPoints(Vector3 a, Vector3 b,float width = 0.2f)//#*# remove from here later and put in road script
+    void GenerateRoadBetweenPoints(Vector3 a, Vector3 b,float width = 0.2f)//TODO: remove from here later and put in road script
     {
         GameObject road = Instantiate(roadBlock,roads.transform) as GameObject;
         float x = 0;
@@ -450,7 +450,6 @@ public class CustomPlane : MonoBehaviour
 
     public void TestCode()
     {
-
         GetAllCycles();
     }
 
@@ -480,60 +479,62 @@ public class CustomPlane : MonoBehaviour
         {
             s += ("(" + graphArray[i, 0] + " " + graphArray[i, 1] + ")");
         }
-        Debug.Log(s);
+        Debug.Log("Graph Edges: " + s);
         allCyclesInGraph = Cycles.ReturnAllCircles(graphArray);//all cycles in the graph
 
+
+        //----------------------------------------------------- Previous Approch
         //NOW DELETE THE CYCLES CONTAINING EXTRA EDGES AND POINTS
 
-        //Debug.Log(allCyclesInGraph.Count);
+        Debug.Log("Total Cycles found by the algorithm: "+allCyclesInGraph.Count);
 
-        //List<int> cyclesIDToRemove = new List<int>();
+        List<int> cyclesIDToRemove = new List<int>();
 
-        //for (int i = 0; i < allCyclesInGraph.Count; i++)
-        //{
-        //    foreach (var pt in points)//all points of current cycle
-        //    {
-        //        if (!allCyclesInGraph[i].Contains(pt.id))//all the points not in this cycle, check if point is inside the cycle
-        //        {
-        //            string j = "";
-        //            for (int k = 0; k < allCyclesInGraph[i].Length; k++)
-        //            {
-        //                j += "" + allCyclesInGraph[i][k] + ",";
-        //            }
+        for (int i = 0; i < allCyclesInGraph.Count; i++)
+        {
+            foreach (var pt in allVertices)//all points of current cycle
+            {
+                if (!allCyclesInGraph[i].Contains(pt.id))//all the points not in this cycle, check if point is inside the cycle
+                {
+                    string j = "";
+                    for (int k = 0; k < allCyclesInGraph[i].Length; k++)
+                    {
+                        j += "" + allCyclesInGraph[i][k] + ",";
+                    }
 
-        //            if (Utility.IsInPolygon(allCyclesInGraph[i], pt.coord, points)) // If the current point(point other than the one which make up the cycle) is inside the current cycle
-        //            {
-        //                //Debug.Log(i.ToString() + ": " + Utility.IsInPolygon(allCyclesInGraph[i], pt.coord, points) + " " + pt.id.ToString());
-        //                //allCyclesInGraph.Remove(allCyclesInGraph[i]);
-        //                cyclesIDToRemove.Add(i);
-        //            }
+                    if (Utility.IsInPolygon(allCyclesInGraph[i], pt.coord, allVertices)) // If the current point(point other than the one which make up the cycle) is inside the current cycle
+                    {
+                        //Debug.Log(i.ToString() + ": " + Utility.IsInPolygon(allCyclesInGraph[i], pt.coord, points) + " " + pt.id.ToString());
+                        //allCyclesInGraph.Remove(allCyclesInGraph[i]);
+                        cyclesIDToRemove.Add(i);
+                    }
 
-        //            if (Utility.IsInPolygonUsingRay(allCyclesInGraph[i], pt.coord, points))
-        //            {
-        //                //Debug.Log(pt.id);
-        //                //cyclesIDToRemove.Add(i);
-        //            }
-        //        }
-        //    }//remove if point inside 
-        //    //TODO: Remove if two pairs are connected
-        //}// Remove cycles
+                    if (Utility.IsInPolygonUsingRay(allCyclesInGraph[i], pt.coord, allVertices))
+                    {
+                        //Debug.Log(pt.id);
+                        //cyclesIDToRemove.Add(i);
+                    }
 
-        //foreach(var cycleToBeRemovedID in cyclesIDToRemove)
-        //{
+                    //Debug.Log("Area of cycle :" + Utility.PolygonArea(allCyclesInGraph[i], allVertices)); //Uncomment this to see areas of cycles
+                }
+            }//remove if point inside 
+            //TODO: Remove if two pairs are connected
+        }// Remove cycles
 
-        //    string cy = "*_* " + cycleToBeRemovedID.ToString() + " : ";
-        //    foreach (var pt in allCyclesInGraph[cycleToBeRemovedID])
-        //    {
-        //        cy += " " + pt + ",";
-        //    }
-        //    Debug.Log(cy);
-        //}
+        foreach (var cycleToBeRemovedID in cyclesIDToRemove)
+        {
+            string cy = cycleToBeRemovedID.ToString() + " : ";
+            foreach (var pt in allCyclesInGraph[cycleToBeRemovedID])
+            {
+                cy += " " + pt + ",";
+            }
+            Debug.Log("Cycle to be removed: id = " + cycleToBeRemovedID + ", Vertices := " + cy);
+        }
 
-        Debug.Log(allCyclesInGraph.Count);
+        //----------------------------------------------------
 
-        // New Approach
-
-        FindCycles.FindMCB(graph,allVertices);
+       //---------------------------------------------------- New Approach using Minimum Cycle Basis *** TODO
+       // FindCycles.FindMCB(graph,allVertices);
 
     }
 

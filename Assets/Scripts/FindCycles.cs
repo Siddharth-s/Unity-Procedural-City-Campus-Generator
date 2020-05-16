@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//***** Not Complete
 public static class FindCycles 
 {
     public static void FindMCB(List<int[]> planarGraph,List<Vertex> allVertices)
@@ -13,14 +14,18 @@ public static class FindCycles
 
         Vertex leftMostBottomMostVertex = verticesCopy[0];
 
-        leftMostBottomMostVertex = FindLeftMostBottomMostPoint(verticesCopy, leftMostBottomMostVertex);// TODO: check if this works
+        leftMostBottomMostVertex = FindLeftMostBottomMostPoint(verticesCopy, leftMostBottomMostVertex);
 
         //TODO: Select first clockwisemost edgesw
+        //TODO: Extract individual cycles by choosing counterClockwiseMost edges from new vertices * stop when the firts vertex is reached
+        //TODO: Remove appropriate vertex/edge 
+        //TODO: Remove Filaments
+        //TODO: Repeat until no vertex/edges are left
 
-        Debug.Log(leftMostBottomMostVertex.coord.x + " " + leftMostBottomMostVertex.coord.y + " ID:" + leftMostBottomMostVertex.id);
+        Debug.Log(leftMostBottomMostVertex.coord.x + " " + leftMostBottomMostVertex.coord.y + " ID:" + leftMostBottomMostVertex.id);// Checking if the 
     }
 
-    private static Vertex GetClockwiseMost(Vertex vPrev, Vertex vCurr)
+    private static Vertex GetClockwiseMost(Vertex vPrev, Vertex vCurr)//TODO: Work on this
     {
         if (true)
         {

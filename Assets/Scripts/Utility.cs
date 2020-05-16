@@ -120,6 +120,7 @@ public static class Utility
         Vector3 midPt = (a.a + a.b) * 0.5f;
         return midPt;
     }
+
     public static void DestroyChildren(GameObject obj)
     {
         List<GameObject> x = new List<GameObject>(); 
@@ -166,6 +167,7 @@ public static class Utility
         edge[1] = pointB;
         return edge;
     }
+
     public static void  AddVerticesAtIntersection(Line line ,ref List<Line> allLines, ref List<Vertex> points,Vector3 gatePosition)
     {
         Vector3 tempIntersection = Vector3.zero;
@@ -237,13 +239,13 @@ public static class Utility
         return new Vector3(float.MaxValue,float.MaxValue,float.MaxValue);
     }
 
-    public static bool IsInPolygon(int[] loop, Vector3 p,List<Vertex> point)
+    public static bool IsInPolygon(int[] loop, Vector3 p,List<Vertex> vertices)
     {
 
         Vector3[] poly = new Vector3[loop.Length];
         for (int i = 0; i < loop.Length; i++)
         {
-            poly[i] = PointFromID(point,loop[i]);
+            poly[i] = PointFromID(vertices,loop[i]);
         }//poly contains all coordinates of the points
         Vector3 p1, p2;
         bool inside = false;
@@ -286,12 +288,6 @@ public static class Utility
     public static bool IsInPolygonUsingRay(int[] loop, Vector3 p, List<Vertex> points)
     {
         bool inside = false;
-        //Vector3[] poly = new Vector3[loop.Length];
-        
-        //for (int i = 0; i < loop.Length - 1; i++)
-        //{
-        //    poly[i] = PointFromID(point, loop[i]);
-        //}//poly contains all coordinates of the points
 
         List<Line> linesOfPoly = ListOfLineOfAPolygon(loop,points);
         int count = NOofIntersectionsByRay(new Line(p,p + Vector3.right), linesOfPoly);
@@ -302,13 +298,12 @@ public static class Utility
         return inside;
 
 
-        //Get all the pairs of lines possible from the points in circle except the ones in circle
-        //check if any pair exists in the set of all lines
+        //TODO: Get all the pairs of lines possible from the points in circle except the ones in circle
+        //TODO: check if any pair exists in the set of all lines
 
- 
     }
 
-    public static List<Line> ListOfLineOfAPolygon(int[] arr,List<Vertex> points)//takes array of points ids of polygon
+    public static List<Line> ListOfLineOfAPolygon(int[] arr,List<Vertex> points)//takes array of points ids of polygon and returns a list of corresponding lines
     {
         List<Line> polygon = new List<Line>();
         for (int i = 0; i < arr.Length - 1; i++)
@@ -317,5 +312,32 @@ public static class Utility
         }
         polygon.Add(new Line(PointFromID(points, arr[arr.Length - 1]), PointFromID(points, arr[0])));
         return polygon;
+    }
+
+    public static float PolygonArea(int[] loop, List<Vertex> vertices)
+    {
+        Vector3[] poly = new Vector3[loop.Length];
+        for (int i = 0; i < loop.Length; i++)
+        {
+            poly[i] = PointFromID(vertices, loop[i]);
+        }//poly contains all coordinates of the points
+        // Add the first point to the end.
+        int num_points = poly.Length;
+
+        Vector3[] pts = new Vector3[num_points + 1];
+        poly.CopyTo(pts, 0);
+        pts[num_points] = poly[0];
+
+        // Get the areas.
+        float area = 0;
+        for (int i = 0; i < num_points; i++)
+        {
+            area +=
+                (pts[i + 1].x - pts[i].z) *
+                (pts[i + 1].x + pts[i].z) / 2;
+        }
+
+        // Return the result.
+        return Mathf.Abs(area);
     }
 }
