@@ -27,10 +27,6 @@ public class PlaneEditor : Editor
         {
             plane.GenerateSecondPrimaryRoad();
         }
-        if (GUILayout.Button("Test Code"))
-        {
-            plane.TestCode();
-        }
         if (GUILayout.Button("Destroy Roads"))
         {
             plane.DestroyRoads();
@@ -38,6 +34,10 @@ public class PlaneEditor : Editor
         if (GUILayout.Button("Generate Full Network"))
         {
             plane.GenerateFullNetwork();
+        }
+        if (GUILayout.Button("Test Code"))
+        {
+            plane.TestCode();
         }
     }
 }

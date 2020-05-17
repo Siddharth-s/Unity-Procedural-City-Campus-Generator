@@ -4,7 +4,7 @@ using UnityEngine;
 using System.Linq;
 
 
-public struct Line
+public struct Line // struct to store line as two vertex
 {
     public Vector3 a, b;
 
@@ -14,7 +14,7 @@ public struct Line
         b = z;
     }
 }
-public class Vertex
+public class Vertex 
 {
     public Vector3 coord;
     public int id;
@@ -39,13 +39,13 @@ public class CustomPlane : MonoBehaviour
     Mesh mesh;
     public List<Vector3> planeVertices;
 
-    //for mesh generation of plane-----
+    //variables for mesh generation of plane-----
 
     List<int> trianglesList;
     Vector3[] vertices;
     int[] triangles;
     //----------------------------------
-    //Storing information for comp
+    //Storing information for computations
     [HideInInspector] public float minX, minZ, maxX, maxZ;
     [HideInInspector] public Vector3 centroid;
     List<Line> outerLines;//contains pairs of vertices to define lines
@@ -56,14 +56,14 @@ public class CustomPlane : MonoBehaviour
     List<int> intList;
     bool[,] grid;
     
-    //refrences
+    //refrences to other objects in scene view
     public Material roadMaterial;
     public GameObject gate,roads;
     Vector3 gateCoords;
 
-    public void GeneratePlane()
+    public void GeneratePlane() 
     {
-        CalculateMinMax();  
+        CalculateMinMax();  //Calculates the minimum and maximum x,y values of the vertices
         AssignInitialPoints();  // Points lying on circumference
         outerLines = new List<Line>();
         allprimaryRoads = new List<Line>();
@@ -84,11 +84,10 @@ public class CustomPlane : MonoBehaviour
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
 
-        PopulateVertices();
+        PopulateVertices(); 
         PopulateTriangles();
 
         mesh.Clear();
-
         mesh.vertices = vertices;
         mesh.triangles = triangles;
         mesh.RecalculateNormals();
@@ -161,7 +160,7 @@ public class CustomPlane : MonoBehaviour
         }
     }
 
-    void GenerateRoadBetweenPoints(Vector3 a, Vector3 b,float width = 0.2f)//TODO: remove from here later and put in road script
+    void GenerateRoadBetweenPoints(Vector3 a, Vector3 b,float width = 0.2f)// Generates a road by placing a cuboid of appropriate dimensions
     {
         GameObject road = Instantiate(roadBlock,roads.transform) as GameObject;
         float x = 0;
@@ -515,11 +514,11 @@ public class CustomPlane : MonoBehaviour
                         //cyclesIDToRemove.Add(i);
                     }
 
-                    //Debug.Log("Area of cycle :" + Utility.PolygonArea(allCyclesInGraph[i], allVertices)); //Uncomment this to see areas of cycles
+                    Debug.Log("Area of cycle :" + Utility.PolygonArea(allCyclesInGraph[i], allVertices)); // Area of cycles
                 }
             }//remove if point inside 
-            //TODO: Remove if two pairs are connected
-        }// Remove cycles
+
+        }// TODO: Remove cycles with id in "cyclesIDToRemove"
 
         foreach (var cycleToBeRemovedID in cyclesIDToRemove)
         {
@@ -538,14 +537,14 @@ public class CustomPlane : MonoBehaviour
 
     }
 
-    private static void ClearConsole()
+    private static void ClearConsole() // Function to clear debug entries
     {
         var logEntries = System.Type.GetType("UnityEditor.LogEntries, UnityEditor.dll");
         var clearMethod = logEntries.GetMethod("Clear", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public);
         clearMethod.Invoke(null, null);
     }
 
-    void OnDrawGizmosSelected()
+    void OnDrawGizmosSelected() // Function to help visulaize data more clearly by drawing gizmos like lines and vertex IDs
     {
         if (allVertices != null)
         {
