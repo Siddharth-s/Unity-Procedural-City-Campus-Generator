@@ -24,5 +24,5 @@ public class BuildingData : MonoBehaviour
         public float area_sqm;
     }
 
-    public Building[] scheme;
+    public Building[] buildings;
 }
