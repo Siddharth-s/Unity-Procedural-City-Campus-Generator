@@ -569,8 +569,13 @@ public class CustomPlane : MonoBehaviour
     {
         foreach (Line pt in listOfLines)
         {
-            Gizmos.color = Random.ColorHSV();
-            Gizmos.DrawLine(pt.a + Vector3.up * 3, pt.b + Vector3.up * 3);
+            //Gizmos.color = Random.ColorHSV();
+            //Gizmos.DrawLine(pt.a + Vector3.up * 3, pt.b + Vector3.up * 3);
+            Vector3[] pts = new Vector3[2];
+            pts[0] = pt.a + Vector3.up * 3;
+            pts[1] = pt.b + Vector3.up * 3;
+            UnityEditor.Handles.color = Random.ColorHSV();
+            //UnityEditor.Handles.DrawAAPolyLine(3f,2,pts);
         }
     }
 }
